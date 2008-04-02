@@ -1,0 +1,46 @@
+FromParam
+=========
+
+This plugin is a tiny addition to ActiveRecord::Base that establishes a better 
+convention for finding records based on parameters. It adds a "from_param" class
+method to ActiveRecord::Base as a convention for fetching a model from a URL
+parameter. By default it will find a record based on the to_i of the passed in
+parameter, but the real use is by overriding it.
+
+It's time to move away from generated-key-dependence, and this plugin is an attempt
+to make that easy, painless, and work easily within the existing systems.
+
+Example
+=======
+
+  # default behavior
+
+  class User < ActiveRecord::Base
+  
+  end
+  
+  class UsersController < ApplicationController
+    # GET /users/1
+    def show
+      @user = User.from_param(params[:id]) # => <User id=1>
+    end
+  end
+  
+  # overriding
+  
+  class User < ActiveRecord::Base
+    def to_param
+      login
+    end
+    
+    def self.from_param(parameter)
+      User.find_by_login(parameter)
+    end
+  end
+  
+  class UsersController < ApplicationController
+    # GET /users/mbleigh
+    @user = User.from_param(params[:id]) # => <User id=1 login=mbleigh>
+  end
+
+Copyright (c) 2008 Michael Bleigh, released under the MIT license
