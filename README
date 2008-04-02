@@ -22,7 +22,7 @@ Example
   class UsersController < ApplicationController
     # GET /users/1
     def show
-      @user = User.from_param(params[:id]) # => <User id=1>
+      @user = User.from_param(params[:id]) # => <User id=1 login=mbleigh>
     end
   end
   
