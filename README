@@ -1,11 +1,17 @@
 FromParam
 =========
 
-This plugin is a tiny addition to ActiveRecord::Base that establishes a better 
+This plugin is an addition to  ActiveRecord::Base that establishes a better 
 convention for finding records based on parameters. It adds a "from_param" class
 method to ActiveRecord::Base as a convention for fetching a model from a URL
 parameter. By default it will find a record based on the to_i of the passed in
-parameter, but the real use is by overriding it.
+parameter, but storing a parameter in a column is where it becomes especially useful.
+
+If you create a 'param' column in your table (or any other column using set_param_column),
+the to_param of your record will automatically be saved to that column whenever
+you save the record, and you will be able to retrieve it using just a simple
+Model.from_param call with the generated to_param. It is probably wise to add an index
+to the param column if you use one.
 
 It's time to move away from generated-key-dependence, and this plugin is an attempt
 to make that easy, painless, and work easily within the existing systems.
@@ -16,31 +22,35 @@ Example
   # default behavior
 
   class User < ActiveRecord::Base
-  
-  end
-  
-  class UsersController < ApplicationController
-    # GET /users/1
-    def show
-      @user = User.from_param(params[:id]) # => <User id=1 login=mbleigh>
-    end
-  end
-  
-  # overriding
-  
-  class User < ActiveRecord::Base
     def to_param
-      login
-    end
-    
-    def self.from_param(parameter)
-      User.find_by_login(parameter)
+      "#{id}-#{first_name.downcase}-#{last_name.downcase}"
     end
   end
   
   class UsersController < ApplicationController
-    # GET /users/mbleigh
-    @user = User.from_param(params[:id]) # => <User id=1 login=mbleigh>
+    # GET /users/1-bobby-mcfarin
+    def show
+      @user = User.from_param(params[:id]) # => <User id=1 first_name="Bobby" last_name="McFarin">
+    end
   end
+  
+  # using a 'param' column, in this case 'slug'
+  
+  class Post < ActiveRecord::Base
+    set_param_column "slug" # defaults to "param"
+    def to_param
+      "#{created_at.strftime("%Y-%m-%d")}-#{title.gsub(" ","-").downcase.gsub(/[^a-z0-9-]/,"")}"
+    end
+  end
+  
+  class PostsController < ApplicationController
+    # GET /posts/2008-04-26-from-param-plugin-released
+    @post = Post.from_param(params[:id]) # => <Post title="From Param: Plugin Released" created_at="2008-04-26">
+  end
+  
+Resources
+=========
+
+Lighthouse: 
 
 Copyright (c) 2008 Michael Bleigh, released under the MIT license
