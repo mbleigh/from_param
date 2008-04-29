@@ -42,7 +42,7 @@ Example
       "#{created_at.strftime("%Y-%m-%d")}-#{title.gsub(" ","-").downcase.gsub(/[^a-z0-9-]/,"")}"
     end
   end
-  
+
   class PostsController < ApplicationController
     # GET /posts/2008-04-26-from-param-plugin-released
     @post = Post.from_param(params[:id]) # => <Post title="From Param: Plugin Released" created_at="2008-04-26">
@@ -51,6 +51,7 @@ Example
 Resources
 =========
 
-Lighthouse: 
+GitHub: http://github.com/mbleigh/from_param
+Lighthouse: http://mbleigh.lighthouseapp.com/projects/10478-from-param
 
-Copyright (c) 2008 Michael Bleigh, released under the MIT license
+Copyright (c) 2007 Michael Bleigh (http://mbleigh.com/) and Intridea Inc. (http://intridea.com/), released under the MIT license
